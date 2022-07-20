@@ -10,7 +10,7 @@ conf = {
     "password": "password",
     "server": "server",
     "username": "username", 
-    "workbooks": pd.read_csv("lw_low_importance_tableau_repoerts.csv")["Workbook Name (expand for sheets)"].to_list()
+    "workbooks": "pd.read_csv('names of workbooks to be moved.csv')"
 }    
 
 
