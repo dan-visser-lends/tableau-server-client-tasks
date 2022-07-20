@@ -5,20 +5,17 @@
 # 
 # This purpose of this sript is to be used as a part of a 
 # systematic cleanup of reports by deleting reports that
-# have been moved to a specified folder. 
+# have been moved to a specified "archive" folder. 
 #
 # To run the script, you must have installed Python 3.7 or later.
 # Before running the script, you are required to configure of the following:
-# 'server address':      The address of the server holding the workbooks,
-#                        where the server address has no trailing slash 
-#                        (e.g. http://localhost);
-# 'server':              where the tableau server is hosted 
-# 'site_name':           The site, as listed in the sserver url 
-# 'username':            the username of the account with appropriate server access;
-# 'Password':            The password for the user;
-# 'Archive project': The folder where the workbooks will be moved to.
+# 'server address':  the address where the tableau server is hosted;
+# 'site_name':       the site, as listed in the server url;
+# 'username':        the username of the account with appropriate server access;
+# 'Password':        the password for the account with appropriate server access;
+# 'Archive project': the folder where the workbooks will be moved to.
+# 
 # How these variables are configured is described below. 
-####
 ####
 
 import tableauserverclient as TSC

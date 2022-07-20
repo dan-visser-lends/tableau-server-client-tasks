@@ -2,20 +2,20 @@
 # This script uses Tableau Server Client to move a workbook 
 # from one project to another. It will find a workbook that 
 # matches a given name and update it to be in the desired project.
+# 
+# The prupose of this script is to systematically add workbooks 
+# that are no longer being used to be archived.
 #
 # To run the script, you must have installed Python 3.7 or later.
 # Before running the script, you are required to configure of the following:
-# 'server address':      The address of the server holding the workbooks,
-#                        where the server address has no trailing slash 
-#                        (e.g. http://localhost);
-# 'server':              where the tableau server is hosted 
-# 'site_name':           The site, as listed in the sserver url 
+# 'server address':      the address where the tableau server is hosted;
+# 'site_name':           the site, as listed in the server url;
 # 'username':            the username of the account with appropriate server access;
 # 'Password':            The password for the user;
 # 'Workbooks':           The name of the workbooks to be moved;
-# 'Destination project': The folder where the workbooks will be moved to.
+# 'Destination project': The project where the workbooks will be moved to.
+# 
 # How these variables are configured is described below. 
-####
 ####
 
 import tableauserverclient as TSC
