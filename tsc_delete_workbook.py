@@ -53,14 +53,16 @@ def main(server_url, site_name, username, password, archive_project):
     tableau_auth = TSC.TableauAuth(username, password, site_name)
     server = TSC.Server(server_url, use_server_version=True)
     with server.auth.sign_in(tableau_auth):
-
+        
+        # Step 2: Return all workbooks on the server
         server.workbooks.all()
         try:
+            # Step 3: Filter workbooks by those in the archive project
             workbooks = workbooks.filter(project_name=archive_project)
         except IndexError:
             raise LookupError(f"No project named {archive_project} found")
 
-        # Step 4: Update workbook with new project id
+        # Step 4: Delete the workbooks
         for i in len(workbooks): 
             workbook = workbooks[i]
             try:
