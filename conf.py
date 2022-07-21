@@ -2,7 +2,7 @@ import pandas as pd
 """
     conf.py is the dictionary of all the credentials required 
     to access tableau server through the a API, as well as 
-    the list of workbooks ot be moved on the server.
+    the list of workbooks to be moved on the server.
 """
 conf = {
     "API_version": "3.4",
