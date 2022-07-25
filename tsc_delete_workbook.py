@@ -68,5 +68,8 @@ def main(server_url, site_name, username, password, archive_project):
             except IndexError:
                 raise LookupError(f"No project named {workbook.id} found")
 
+        server.auth.sign_out()
+
+
 if __name__ == "__main__":
     main(server_url, site_name, username, password, archive_project, workbook_list)
