@@ -7,9 +7,9 @@ import pandas as pd
 conf = {
     "API_version": "3.4",
     "project": "to be deleted", 
-    "username": "daniel.visser@lendingworks.co.uk", 
-    "password": "pbf9kqw9rqk!rtx3UAN",
-    "server": "https://tableau.lendingworks.co.uk",
+    "username": "username", 
+    "password": "password",
+    "server": "something.co.uk",
     "workbooks": "Dan test archive workbook"
 }    
 
