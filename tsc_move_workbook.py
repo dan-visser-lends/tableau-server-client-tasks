@@ -73,7 +73,8 @@ def main(server_url, site_name, username, password, archive_project, workbook_li
             # Step 4: Update workbook with new project id
             workbook.project_id = dest_project.id
             server.workbooks.update(workbook)
-
+        
+        server.auth.sign_out()
 
 if __name__ == "__main__":
     main(server_url, site_name, username, password, archive_project, workbook_list)
