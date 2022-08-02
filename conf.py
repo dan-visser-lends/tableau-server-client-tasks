@@ -6,11 +6,12 @@ import pandas as pd
 """
 conf = {
     "API_version": "3.4",
-    "project": "something", 
+    "username": "username", 
     "password": "password",
     "server": "server",
-    "username": "username", 
-    "workbooks": "pd.read_csv('names of workbooks to be moved.csv')"
+    "site": "",
+    "project": "something", 
+    "workbooks": pd.read_csv("low_importance_reports.csv")["Workbook Name (expand for sheets)"].to_list()
 }    
 
 

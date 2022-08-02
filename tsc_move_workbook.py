@@ -48,7 +48,7 @@ def main(server_url, site_name, username, password, archive_project, workbook_to
         'username'        The username of the account authorising the request 
         'password'        The password of the account authorising the request
         'archive_project' The name of the project to move workbook into
-        'workbook_list'   The list of the workbooks to move
+        'workbook_to_move'   The list of the workbooks to move
     Returns:
         None
     """
@@ -58,7 +58,7 @@ def main(server_url, site_name, username, password, archive_project, workbook_to
     with server.auth.sign_in(tableau_auth):
 
         # Step 2: Ensure the workbook exits on the server.
-        all_workbooks = server.workbooks.get()
+        all_workbooks = server.workbooks.get()[0]
         all_workbooks_list = []
 
         for i in len(all_workbooks): 
