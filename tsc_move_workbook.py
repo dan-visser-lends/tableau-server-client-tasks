@@ -33,7 +33,7 @@ import conf as config
 archive_project = config.conf["project"]
 password = config.conf["password"]
 server_url = config.conf["server"]
-site_name = config.conf["site_name"]
+site_name = config.conf["site"]
 username = config.conf["username"]
 workbook_to_move = config.conf["workbooks"]
 
@@ -57,37 +57,45 @@ def main(server_url, site_name, username, password, archive_project, workbook_to
     server = TSC.Server(server_url, use_server_version=True)
     with server.auth.sign_in(tableau_auth):
 
-        # Step 2: Ensure the workbook exits on the server.
-        all_workbooks = server.workbooks.get()[0]
+        # Step 2: Find destination project
+        try:
+            dest_project = server.projects.filter(name=archive_project)[0]
+        except IndexError:
+            raise LookupError(f"No project named {archive_project} found.")
+
+        # Step 3: list all workbooks, both on the server and already in the archive folder.
         all_workbooks_list = []
+        archive_list = []
+        for wb in TSC.Pager(server.workbooks):
+            all_workbooks_list.append(wb.name)
 
-        for i in len(all_workbooks): 
-            all_workbooks_list.append(all_workbooks[i].name)
+            if wb.project_id == dest_project.id:
+                archive_list.append(wb.name)
 
-        all_workbooks_set = set(all_workbooks_list)
-        intersection = all_workbooks_set.intersection(workbook_to_move)
+        # Step 4: Filter the "to be archived" workbooks by those that are actually on the server
+        intersection = set(all_workbooks_list).intersection(workbook_to_move)
         workbook_list = list(intersection)
+        print(len(workbook_list))
+        print(len(archive_list))
 
-        for workbook_name in workbook_list:
-            # Step 2: Find destination project
-            try:
-                dest_project = server.projects.filter(name=archive_project)[0]
-            except IndexError:
-                raise LookupError(f"No project named {archive_project} found.")
 
-            # Step 3: Query workbook to move
-            try:
-                workbooks = server.workbooks.filter(name=workbook_name)
-            except IndexError:
-                raise LookupError(f"No workbook named {workbook_name} found")
+        # Step 5: Archive each workbook
+        for workbook in TSC.Pager(server.workbooks):
+            
+            if workbook.name in workbook_list:
 
-            for i in len(workbooks): 
-                workbook = workbooks[i]
-                # Step 5: Update workbook with new project id
-                workbook.project_id = dest_project.id
-                server.workbooks.update(workbook)
-        
-        server.auth.sign_out()
+                if workbook.project_id != dest_project.id:
+                    workbook.project_id = dest_project.id
+
+                    if workbook.name in archive_list: 
+                        workbook.name = workbook.name + "_2"
+                        archive_list.append(workbook.name)
+                        server.workbooks.update(workbook)
+
+                    else: 
+                        archive_list.append(workbook.name)
+                        server.workbooks.update(workbook)
 
 if __name__ == "__main__":
     main(server_url, site_name, username, password, archive_project, workbook_to_move)
+   

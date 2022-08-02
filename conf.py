@@ -6,11 +6,11 @@ import pandas as pd
 """
 conf = {
     "API_version": "3.4",
-    "username": "username", 
+    "username": "username.co.uk", 
     "password": "password",
-    "server": "server",
+    "server": "something.co.uk",
     "site": "",
-    "project": "something", 
+    "project": "Archive Project", 
     "workbooks": pd.read_csv("low_importance_reports.csv")["Workbook Name (expand for sheets)"].to_list()
 }    
 
