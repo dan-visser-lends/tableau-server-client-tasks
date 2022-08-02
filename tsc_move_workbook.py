@@ -35,10 +35,10 @@ password = config.conf["password"]
 server_url = config.conf["server"]
 site_name = config.conf["site_name"]
 username = config.conf["username"]
-workbook_list = config.conf["workbooks"]
+workbook_to_move = config.conf["workbooks"]
 
 
-def main(server_url, site_name, username, password, archive_project, workbook_list):
+def main(server_url, site_name, username, password, archive_project, workbook_to_move):
     """
     Description:
         Moves workbooks listed in the config file to the "Archive" project
@@ -57,6 +57,17 @@ def main(server_url, site_name, username, password, archive_project, workbook_li
     server = TSC.Server(server_url, use_server_version=True)
     with server.auth.sign_in(tableau_auth):
 
+        # Step 2: Ensure the workbook exits on the server.
+        all_workbooks = server.workbooks.get()
+        all_workbooks_list = []
+
+        for i in len(all_workbooks): 
+            all_workbooks_list.append(all_workbooks[i].name)
+
+        all_workbooks_set = set(all_workbooks_list)
+        intersection = all_workbooks_set.intersection(workbook_to_move)
+        workbook_list = list(intersection)
+
         for workbook_name in workbook_list:
             # Step 2: Find destination project
             try:
@@ -66,15 +77,17 @@ def main(server_url, site_name, username, password, archive_project, workbook_li
 
             # Step 3: Query workbook to move
             try:
-                workbook = server.workbooks.filter(name=workbook_name)[0]
+                workbooks = server.workbooks.filter(name=workbook_name)
             except IndexError:
                 raise LookupError(f"No workbook named {workbook_name} found")
 
-            # Step 4: Update workbook with new project id
-            workbook.project_id = dest_project.id
-            server.workbooks.update(workbook)
+            for i in len(workbooks): 
+                workbook = workbooks[i]
+                # Step 5: Update workbook with new project id
+                workbook.project_id = dest_project.id
+                server.workbooks.update(workbook)
         
         server.auth.sign_out()
 
 if __name__ == "__main__":
-    main(server_url, site_name, username, password, archive_project, workbook_list)
+    main(server_url, site_name, username, password, archive_project, workbook_to_move)
