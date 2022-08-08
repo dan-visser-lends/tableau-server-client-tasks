@@ -6,12 +6,23 @@ import pandas as pd
 """
 conf = {
     "API_version": "3.4",
-    "username": "username.co.uk", 
-    "password": "password",
-    "server": "something.co.uk",
+    "username": "daniel.visser@lendingworks.co.uk", 
+    "password": "pbf9kqw9rqk!rtx3UAN",
+    "server": "https://tableau.lendingworks.co.uk",
     "site": "",
     "project": "Archive Project", 
     "workbooks": pd.read_csv("low_importance_reports.csv")["Workbook Name (expand for sheets)"].to_list()
 }    
+
+api_conf = { 
+    "api_config": {
+        "server": "https://tableau.lendingworks.co.uk/",
+        "api_version": "3.10",
+        "personal_access_token_name": "dans-token", 
+        "personal_access_token_secret": "yhLpL7H+ROS6pxaIU6hx8Q==:HXjYoexRjeM6n9ekOVsDYwHXhp88hbJz",
+        "site_name": "",
+        "site_url" : ""
+    }
+}   
 
 
