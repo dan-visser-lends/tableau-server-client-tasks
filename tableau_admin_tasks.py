@@ -29,11 +29,11 @@ def active_workbooks():
     
     conn = None
     try:
-        conn = psycopg2.connect(host="tableau.lendingworks.co.uk",
+        conn = psycopg2.connect(host="someserver.co.uk",
                                 port=8060,
                                 database="workgroup",
                                 user="readonly",
-                                password="HWWwZGmFCN7ikoN98hirG9kBbBVHpr66yHNfBqAmY6oW9DXkYy")
+                                password="some password")
 
         curr = conn.cursor()
 
