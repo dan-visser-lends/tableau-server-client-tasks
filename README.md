@@ -1,6 +1,6 @@
 # tableau-server-client-tasks
 
-### NOTE! These functions remain untested, so use at your own risk.
+### NOTE! These functions remain untested and mostly incomplete, so use at your own risk.
 
 This is a repo of scripts used to manage tasks on tableau server, built using tableau server client: an opensource library that interacts with Tableau's REST API.
 

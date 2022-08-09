@@ -75,8 +75,6 @@ def delete_archived_workbook_tasks(server_url, site_name, username, password, ar
 
                             list_of_extracts.append(extract["workbook"]["id"])
 
-        print(len(list_of_extracts))
-
 
 if __name__ == "__main__":
 
