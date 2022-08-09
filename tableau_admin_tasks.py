@@ -7,10 +7,10 @@ import conf as config
 
 api_conf = { 
     "api_config": {
-        "server": "https://tableau.lendingworks.co.uk/",
+        "server": "something",
         "api_version": "3.10",
         "personal_access_token_name": "dans-token", 
-        "personal_access_token_secret": "yhLpL7H+ROS6pxaIU6hx8Q==:HXjYoexRjeM6n9ekOVsDYwHXhp88hbJz",
+        "personal_access_token_secret": "password",
         "site_name": "",
         "site_url" : ""
     }
