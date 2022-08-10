@@ -5,7 +5,7 @@ import pandas as pd
     the list of workbooks to be moved on the server.
 """
 conf = {
-    "API_version": "3.4",
+    "API_version": "3.10",
     "username": "daniel.visser@lendingworks.co.uk", 
     "password": "pbf9kqw9rqk!rtx3UAN",
     "server": "https://tableau.lendingworks.co.uk",

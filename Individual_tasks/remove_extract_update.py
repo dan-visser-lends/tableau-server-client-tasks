@@ -74,6 +74,8 @@ def delete_archived_workbook_tasks(server_url, site_name, username, password, ar
                         if extract["workbook"]["id"] in archived_id_list:
 
                             list_of_extracts.append(extract["workbook"]["id"])
+                            server.tasks.delete('9f9e9d9c-8b8a-8f8e-7d7c-7b7a6f6d6e6d')
+
 
 
 if __name__ == "__main__":

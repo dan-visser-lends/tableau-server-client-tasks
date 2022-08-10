@@ -68,7 +68,7 @@ def main(server_url, site_name, username, password, archive_project):
             try:
                 server.workbooks.delete(workbook.id)
             except IndexError:
-                raise LookupError(f"No project named {workbook.id} found")
+                raise LookupError(f"No workbook named {workbook.id} found")
 
         server.auth.sign_out()
 

@@ -4,6 +4,7 @@ import psycopg2
 import pandas as pd
 import logging
 import conf as config 
+import os
 
 api_conf = { 
     "api_config": {
@@ -21,6 +22,7 @@ server_url = config.conf["server"]
 site_name = config.conf["site"]
 username = config.conf["username"]
 archive_project = config.conf["project"]
+version = config.conf["API_version"]
 
 
 def active_workbooks():
@@ -81,7 +83,8 @@ def archive_workbooks(server_url, site_name, username, password, archive_project
             if wb.project_id == dest_project.id:
                 archive_list.append(wb.name)
 
-        check_list = []
+        archive_list = []
+        workbook_name = []
 
         for wb in TSC.Pager(server.workbooks):
             url_id = wb._webpage_url.split("workbooks/")[1]
@@ -91,14 +94,21 @@ def archive_workbooks(server_url, site_name, username, password, archive_project
                 if wb.project_id != dest_project.id:
                     wb.project_id = dest_project.id
 
+                    archive_list.append(wb.id)
+
                     if wb.name in archive_list: 
                         wb.name = wb.name + "_2"
                         archive_list.append(wb.name)
-                #         server.workbooks.update(wb)
+                        workbook_name.apped(wb.name)
+                        server.workbooks.update(wb)
 
                     else: 
                         archive_list.append(wb.name)
-                #         server.workbooks.update(wb)
+                        workbook_name.apped(wb.name)
+                        server.workbooks.update(wb)
+
+        return archive_list, workbook_name 
+
 
 def extract_tasks(api_conf):
 
@@ -153,16 +163,19 @@ def delete_archived_workbook_tasks(server_url, site_name, username, password, ar
                             server.tasks.delete(extract["id"])
 
 
-def main(server_url, site_name, username, password, archive_project, api_conf): 
+def main(server_url, site_name, username, password, archive_project, api_conf, version): 
     
     ##### STEP 1: Find and archive stale workbooks #####
     stale_workbooks = active_workbooks()
-    archive_workbooks(server_url, site_name, username, password, archive_project, stale_workbooks)
+    stale_workbooks_ids, name_list = archive_workbooks(server_url, site_name, username, password, archive_project, stale_workbooks)
     
-    ##### STEP 2: Remove extract refresh tasks from archived workbooks  #####
+    ##### STEP 2: Remove extract refresh tasks from archived workbooks #####
     extract_task_list = extract_tasks(api_conf)
     delete_archived_workbook_tasks(server_url, site_name, username, password, archive_project, extract_task_list)
-    
+
+    ##### STEP 3: Download workbook to sharepoint and delete of server #####
+    download_and_delete_wokrbooks(username, password, site_name, server_url, workbook_names, filename)
+
 
 if __name__ == "__main__":
 
