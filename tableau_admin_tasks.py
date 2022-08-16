@@ -5,6 +5,9 @@ import pandas as pd
 import logging
 import conf as config 
 import os
+import datetime
+from datetime import timedelta 
+from dateutil.relativedelta import relativedelta
 
 api_conf = { 
     "api_config": {
@@ -25,7 +28,7 @@ archive_project = config.conf["project"]
 version = config.conf["API_version"]
 
 
-def active_workbooks():
+def workbook_classifier():
     
     logger = logging.getLogger()
     
@@ -41,18 +44,37 @@ def active_workbooks():
 
         query = "\
             SELECT\
-                last_view_time,\
-                views_workbook_id\
+                v.last_view_time,\
+                v.views_workbook_id,\
+                u.name\
             FROM\
-                public._views_stats\
+                public._views_stats v\
+            JOIN\
+                public._users u\
+            ON\
+                u.id = v.users_id\
             WHERE\
-                last_view_time > CURRENT_DATE - INTERVAL '3 months';"
+                last_view_time > CURRENT_DATE - INTERVAL '4 months';"
+
 
         curr.execute(query)
         conn.commit()
 
         df = pd.DataFrame(curr.fetchall(), columns=[desc[0] for desc in curr.description])
-        active_workbooks = df["views_workbook_id"].to_list()
+
+
+        now = datetime.datetime.utcnow()
+        active_limit = now - relativedelta(months=3)
+        reminder_limit = now - relativedelta(months=3) + relativedelta(weeks=1)
+
+        active_workbooks = df[(df["last_view_time"]>active_limit)]["views_workbook_id"].astype(str).to_list()
+        to_be_archived_workbooks = df[(df["last_view_time"]<active_limit)]["views_workbook_id"].astype(str).to_list()
+        reminder_workbooks = df[(df["last_view_time"]>active_limit)&(df["last_view_time"]<reminder_limit)]["views_workbook_id"].astype(str).to_list()
+
+        reminder_workbooks = list(set(reminder_workbooks) - set(active_workbooks))
+        to_be_archived_workbooks = list(set(to_be_archived_workbooks) - set(active_workbooks))
+
+        return list(set(active_workbooks)), reminder_workbooks, to_be_archived_workbooks
 
     except Exception as error: 
         logger.error(f"Error while connecting to server repositry. {error}")
@@ -63,7 +85,6 @@ def active_workbooks():
             curr.close()
             conn.close()
 
-    return str(active_workbooks)
 
 
 def archive_workbooks(server_url, site_name, username, password, archive_project, active_workbooks):
@@ -83,7 +104,7 @@ def archive_workbooks(server_url, site_name, username, password, archive_project
             if wb.project_id == dest_project.id:
                 archive_list.append(wb.name)
 
-        archive_list = []
+        to_be_archived = []
         workbook_name = []
 
         for wb in TSC.Pager(server.workbooks):
@@ -98,16 +119,16 @@ def archive_workbooks(server_url, site_name, username, password, archive_project
 
                     if wb.name in archive_list: 
                         wb.name = wb.name + "_2"
-                        archive_list.append(wb.name)
+                        to_be_archived.append(wb.name)
                         workbook_name.apped(wb.name)
                         server.workbooks.update(wb)
 
                     else: 
-                        archive_list.append(wb.name)
+                        to_be_archived.append(wb.name)
                         workbook_name.apped(wb.name)
                         server.workbooks.update(wb)
 
-        return archive_list, workbook_name 
+        return to_be_archived, workbook_name 
 
 
 def extract_tasks(api_conf):
@@ -165,13 +186,16 @@ def delete_archived_workbook_tasks(server_url, site_name, username, password, ar
 
 def main(server_url, site_name, username, password, archive_project, api_conf, version): 
     
-    ##### STEP 1: Find and archive stale workbooks #####
-    stale_workbooks = active_workbooks()
-    stale_workbooks_ids, name_list = archive_workbooks(server_url, site_name, username, password, archive_project, stale_workbooks)
+    ##### STEP 1: Find workbooks that are: active, to be archived and to be reminded. #####
+    active_workbooks, reminder_workbooks, to_be_archived_workbooks = workbook_classifier()
+    stale_workbooks_ids, stale_workbook_names = archive_workbooks(server_url, site_name, username, password, archive_project, active_workbooks)
     
     ##### STEP 2: Remove extract refresh tasks from archived workbooks #####
     extract_task_list = extract_tasks(api_conf)
     delete_archived_workbook_tasks(server_url, site_name, username, password, archive_project, extract_task_list)
+
+    ##### STEP 2: Remove extract refresh tasks from archived workbooks #####
+    archive_notifications(reminder_workbooks, to_be_archived_workbooks)
 
     ##### STEP 3: Download workbook to sharepoint and delete of server #####
     download_and_delete_wokrbooks(username, password, site_name, server_url, workbook_names, filename)
